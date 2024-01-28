@@ -1,0 +1,55 @@
+#include <Arduino.h>
+#include "PCF8574.h"
+
+PCF8574 pcf_sensor(0x3F);  // Sensor PCF address
+#define CONDUCTIVITY_SENSOR_PIN A0  // Replace with the actual pin connected to the conductivity sensor
+
+void setup() {
+  Serial.begin(115200);
+  pcf_sensor.pinMode(P0, OUTPUT);
+  pcf_sensor.pinMode(P1, OUTPUT);
+  pcf_sensor.pinMode(P2, OUTPUT);
+  pcf_sensor.pinMode(P3, OUTPUT);
+  pcf_sensor.pinMode(P4, OUTPUT);
+  pcf_sensor.pinMode(P5, OUTPUT);
+  pcf_sensor.pinMode(P6, OUTPUT);
+  pcf_sensor.pinMode(P7, OUTPUT);
+  pcf_sensor.begin();
+  Serial.println("Test");
+  delay(1000);
+  pcf_sensor.digitalWrite(P3, LOW);
+  pcf_sensor.digitalWrite(P4, LOW);
+  pcf_sensor.digitalWrite(P5, LOW);
+  pcf_sensor.digitalWrite(P6, LOW);
+  pcf_sensor.digitalWrite(P7, LOW);
+}
+
+void loop() {
+  // Read conductivity value from the sensor
+  float conductivityValue = readConductivity();
+
+  // Display or transmit the conductivity value
+  Serial.print("Conductivity: ");
+  Serial.println(conductivityValue);
+
+  // Control PCF8574 based on the conductivity value (replace with your logic)
+  if (conductivityValue > 5000.0) {
+    pcf_sensor.digitalWrite(P0, HIGH);
+  } else {
+    pcf_sensor.digitalWrite(P0, LOW);
+  }
+
+  // Wait for some time before the next reading
+  delay(1000);
+}
+
+float readConductivity() {
+  // Replace this function with your actual code to read conductivity
+  // Example: use an analog pin, I2C sensor, or any other method
+  int analogReading = analogRead(CONDUCTIVITY_SENSOR_PIN);  // Replace A0 with the actual pin or sensor reading
+
+  // Convert the analog reading to conductivity (replace with your calibration formula)
+  float conductivityValue = map(analogReading, 0, 1023, 0, 5000);  // Replace 5000 with your actual max conductivity value
+
+  return conductivityValue;
+}
